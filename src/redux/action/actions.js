@@ -42,16 +42,17 @@ export function getActiveUserData() {
 
 function checkForToken() {
     return new Promise((resolve, reject) => {
-      // authenticateUser()
-      // check for fake auth token in header and return users if valid, this security is implemented server side in a real application
-      if (user && user.token === 'fake-jwt-token') {
-          let activeUser = users.filter(userData => { return user.email === userData.email; })
-          resolve({ ok: true, json: () => activeUser });
-      } else {
-          // return 401 not authorised if token is null or invalid
-          reject('Unauthorised');
+      let userData = localStorage.getItem('user');
+      if(userData) {
+        userData = JSON.parse(userData)
       }
-
+      if(userData && userData.token) {
+        // let activeUser = localStorage,getItem(users);
+        let activeUser = users.filter(userData => { return user.email === userData.email; })
+        resolve({ ok: true, json: () => activeUser })
+      } else {
+        reject('Unauthorised');
+      }
       return;
     });
 }
@@ -64,16 +65,16 @@ export function login(email,password) {
         authenticateLogin(email,password)
             .then(
                 user => {
-                    dispatch(success(user));
+                    let userData = user;
                     // Handle response.
                     user = handleResponse(user)
+                    dispatch(success(userData));
                     // login successful if there's a jwt token in the response
                     if (user && user.token) {
                         // store user details and jwt token in local storage to keep user logged in between page refreshes
                         localStorage.setItem('user', JSON.stringify(user));
                     }
                     browserHistory.push('/');
-                    return user;
                 },
                 error => {
                   alert(error);
@@ -101,7 +102,7 @@ function authenticateLogin(email, password) {
             email:user.email,
             token: 'fake-jwt-token'
         };
-        resolve({ ok: true, json: () => responseJson });
+        resolve({ ok: true, json: () => responseJson, user: user });
     } else {
         // else return error
         reject('Username or password is incorrect');
