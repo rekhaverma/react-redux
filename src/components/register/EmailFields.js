@@ -17,17 +17,6 @@ const validate = values => {
     errors.email = 'Required'
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = 'Invalid email address'
-  } else {
-    let users = localStorage.getItem("users") || [];
-    users = JSON.parse(users);
-
-    console.log("email====>",values.email);
-    console.log("users====>",users);
-    let duplicateUser = users.filter(user => { return user.email === values.email; });
-    console.log("duplicateUser====>",duplicateUser);
-    if(duplicateUser.length) {
-      errors.email='Email already exist with us'
-    }
   }
   return errors
 }
@@ -39,29 +28,29 @@ class EmailFields extends React.Component {
     this.props.nextStep();
   }
 
-  checkUniqueEmail = (event) => {
+  checkUniqueEmail = (email) => {
     // simulate server latency
-    // let users = localStorage.getItem("users") || [];
-    // users = JSON.parse(users);
+    let users = localStorage.getItem("users") || [];
+    users = users && users.length > 0 ? JSON.parse(users) : [];
 
-    // console.log("email====>",event.target.value);
-    // console.log("users====>",users);
-    // let duplicateUser = users.filter(user => { return user.email === event.target.value; });
-    // console.log("duplicateUser====>",duplicateUser);
-    // if(duplicateUser.length) {
-    //   alert("Email already exist with us");
-    // }
+    let duplicateUser = users.filter(user => { return user.email === email; });
+    if(duplicateUser.length) {
+      alert("Email already exist with us");
+      return false
+    }
+    return true;
   }
 
   submit = (values, dispatch, state) => {
-    console.log("values", values);
-    console.log("dispatch", dispatch);
-    console.log("this", this);
-    console.log("state", state);
-    // let jsonValues = values;
-    // jsonValues['imgUrl'] = this.state.imagePreviewUrl;
-    // dispatch(saveImage(jsonValues));
-    this.props.submit(values);
+    // Check for unique email
+    let uniqEmail = this.checkUniqueEmail(values.email)
+    if(uniqEmail) {
+      if(values.confirm_password == values.password) {
+        this.props.submit(values);
+      } else {
+        alert("Password values are not same");
+      }
+    }
   }
 
   render() {
@@ -77,7 +66,7 @@ class EmailFields extends React.Component {
                 component={renderTextField}
                 label="Username"
               />
-              <Field name="email" type="email" component={renderTextField} label="Email" onBlur={this.checkUniqueEmail} />
+              <Field name="email" type="email" component={renderTextField} label="Email" />
               <Field name="password" type="password" component={renderTextField} label="Password" />
               <Field name="confirm_password" type="password" component={renderTextField} label="Confirm Password" />
               <div>

@@ -3,6 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import validate from "./validate.js";
 import renderTextField from "./renderTextField.js";
 import Button from "../landing/components/button.js";
+import { browserHistory } from 'react-router';
 
 
 
@@ -41,9 +42,7 @@ const AccountFields = props => {
       </div>
       <div>
         <Button type="submit">Next</Button>
-        <Button type="button" href="/login">
-          Login
-        </Button>
+        <Button onClick={() => browserHistory.push('/login') }>Login</Button>
       </div>
     </form>
     </div>

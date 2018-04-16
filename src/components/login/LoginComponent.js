@@ -23,26 +23,13 @@ class LoginComponent extends React.Component {
       browserHistory.push('/');
   }
 
-
-  handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value
-    });
-  };
-
   submit = (e) => {
     e.preventDefault();
-    console.log("eeee",e)
-    // print the form values to the console
-    // console.log(values)
     let email = this.email.value;
     let password = this.pswd.value;
-    // const { username, password } = this.state;
     const { dispatch } = this.props;
     if (email && password) {
-        console.log("email",email)
-        let userRec = dispatch(login(email, password));
-        console.log("userRec",userRec)
+      dispatch(login(email, password));
     }
   }
   render() {
@@ -55,10 +42,9 @@ class LoginComponent extends React.Component {
               <Grid item xs>
                 <div>
                   <form action="" onSubmit={this.submit}>
-                    <h1>Login
-                    </h1>
-                    <span className="sign-in-account">or <a href="/register">sign in to your account</a></span>
-                <div>
+                    <h1>Login</h1>
+                    <span className="sign-in-account">or <a href="/register">Register your account</a></span>
+                  <div>
                   <Grid item xs={12} sm={6}>
                     <TextField
                       id="email"
